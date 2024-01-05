@@ -1,26 +1,19 @@
 import React from "react";
-import { Typography, AppBar, CssBaseline, Grid, Toolbar, Container } from '@mui/material';
+import ResponsiveAppBar from "./Components/Appbar";
+import { Route, Routes } from "react-router";
+import Home from "./Components/Home";
+import About from "./Components/About";
+import Settings from "./Components/Settings";
 
 const App = () => {
     return (
         <>
-            <CssBaseline />
-            <AppBar position="relative">
-                <Toolbar>
-                    <Typography variant="h6">
-                        Summarizer
-                    </Typography>
-                </Toolbar>
-            </AppBar>
-            <main>
-                <div>
-                    <Container maxWidth="sm">
-                        <Typography variant="h2" align="center">
-                            Main part                            
-                        </Typography>
-                    </Container>
-                </div>
-            </main>
+            <ResponsiveAppBar />
+            <Routes>
+                <Route path="/" element={<Home />}/>
+                <Route path="/Settings" element={<Settings />}/>
+                <Route path="/About" element={<About/>}/>
+            </Routes>
         </>
     );
 }
