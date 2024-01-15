@@ -34,11 +34,25 @@ export default function SignIn() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    ClientLogin(data.get('email'), data.get('password'));
   };
+
+  const ClientLogin = async (email, password) => {
+    await fetch("http://127.0.0.1:5000/login", {
+      method: "POST",
+      body: JSON.stringify({
+        clientEmail: email,
+        clientPassword: password
+      }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    })
+      .then((response) => response.json())
+      .catch((err) => {
+        console.log(err.message);
+      });
+  }
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -98,7 +112,7 @@ export default function SignIn() {
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="/Sign-up" variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>

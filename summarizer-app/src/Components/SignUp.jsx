@@ -34,11 +34,29 @@ export default function SignUp() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    ClientRegister(data.get('firstName') + data.get('lastName'), data.get('email'), data.get('password'));
+    console.log(data.get('firstName') + data.get('lastName'), data.get('email'), data.get('password'));
+    
   };
+
+  const ClientRegister = async (name, email, password) => {
+    await fetch("http://127.0.0.1:5000/client", {
+      method: "POST",
+      body: JSON.stringify({
+        clientName: name,
+        clientEmail: email,
+        clientPassword: password,
+        clientId: Math.floor(Math.random() * 10)
+      }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    })
+      .then((response) => response.json())
+      .catch((err) => {
+        console.log(err.message);
+      });
+  }
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -119,7 +137,7 @@ export default function SignUp() {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="/Sign-in" variant="body2">
                   Already have an account? Sign in
                 </Link>
               </Grid>
