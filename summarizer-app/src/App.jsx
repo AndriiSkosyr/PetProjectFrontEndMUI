@@ -5,8 +5,8 @@ import Home from "./Components/Home";
 import About from "./Components/About";
 import Settings from "./Components/Settings";
 import StickyFooter from "./Components/StickyFooter";
-import SignIn from "./Components/SignIn";
-import SignUp from "./Components/SignUp";
+import SignIn from "./Components/Pages/SignIn";
+import SignUp from "./Components/Pages/SignUp";
 
 const App = () => {
     return (
