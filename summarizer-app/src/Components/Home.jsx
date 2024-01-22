@@ -1,8 +1,8 @@
 import React from "react";
 import { Grid } from "@mui/material";
-import CalendarsList from "./CalendarsList";
-import EventsList from "./EventsList";
-import MeetingsList from "./MeetingsList";
+import CalendarsList from "./Lists/CalendarsList"
+import EventsList from "./Lists/EventsList";
+import MeetingsList from "./Lists/MeetingsList";
 
 const Home = () => {
     return (
