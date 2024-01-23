@@ -1,7 +1,10 @@
 import { Box, Button, ButtonGroup, Card, List, ListItem, ListItemButton, ListItemText, Typography } from "@mui/material";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import React, { useState, useEffect } from "react";
 
 const CalendarsList = () => {
+    const [isHovered, setIsHovered] = useState(false);
     const [CalendarsArray, setCalendars] = useState([]);
 
     useEffect(() => {
@@ -45,11 +48,11 @@ const CalendarsList = () => {
         console.log(data);
     }
 
-    const DeleteCalendars = async () => {
+    const DeleteCalendars = async (calendarId) => {
         const requestOptions = {
             method: "DELETE",
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ calendarId: "1" })
+            body: JSON.stringify({ calendarId: calendarId })
         }
         const response = await fetch("http://127.0.0.1:5000/calendar", requestOptions);
         const data = await response.json();
@@ -72,8 +75,12 @@ const CalendarsList = () => {
                     <List>
                         {CalendarsArray.map(item => {
                             return <ListItem>
-                                <ListItemButton component="a" href="#">
+                                <ListItemButton onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
                                     <ListItemText id={item.CalendarId} primary={item.CalendarName} />
+                                    <Box sx={{ display: isHovered ? 'flex' : 'none' }}>
+                                        <EditIcon fontSize="small" onClick={() => { UpdateCalendars() }} sx={{ marginRight: "1vw" }} />
+                                        <DeleteIcon fontSize="small" onClick={() => { DeleteCalendars(item.CalendarId) }} />
+                                    </Box>
                                 </ListItemButton>
                             </ListItem>
                         })}
@@ -86,10 +93,8 @@ const CalendarsList = () => {
                             marginRight: '2vh',
                             display: "flex"
                         }}>
-                        <ButtonGroup disableElevation fullWidth="true" variant="text" aria-label="outlined primary button group">
-                            <Button color="success" onClick={() => { CreateCalendars() }}>Create</Button>
-                            <Button color="inherit" onClick={() => { UpdateCalendars() }}>Update</Button>
-                            <Button color="warning" onClick={() => { DeleteCalendars() }}>Delete</Button>
+                        <ButtonGroup disableElevation fullWidth="true" variant="outlined" aria-label="outlined primary button group">
+                            <Button color="success" onClick={() => { CreateCalendars() }}>Add Calendar</Button>
                         </ButtonGroup>
                     </Box>
                 </Card>
