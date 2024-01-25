@@ -2,6 +2,7 @@ import { Box, Button, ButtonGroup, Card, List, ListItem, ListItemButton, ListIte
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const CalendarsList = () => {
     const [isHovered, setIsHovered] = useState(false);
@@ -24,18 +25,7 @@ const CalendarsList = () => {
             .catch((err) => {
                 console.log(err.message);
             });
-    }
-
-    const CreateCalendars = async () => {
-        const requestOptions = {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ calendarName: "testPOST", calendarId: "1" })
-        }
-        const response = await fetch("http://127.0.0.1:5000/calendar", requestOptions);
-        const data = await response.json();
-        console.log(data);
-    }
+    }    
 
     const UpdateCalendars = async () => {
         const requestOptions = {
@@ -46,6 +36,7 @@ const CalendarsList = () => {
         const response = await fetch("http://127.0.0.1:5000/calendar", requestOptions);
         const data = await response.json();
         console.log(data);
+        ReadCalendars();
     }
 
     const DeleteCalendars = async (calendarId) => {
@@ -57,6 +48,7 @@ const CalendarsList = () => {
         const response = await fetch("http://127.0.0.1:5000/calendar", requestOptions);
         const data = await response.json();
         console.log(data);
+        ReadCalendars();
     }
 
     return (
@@ -94,7 +86,7 @@ const CalendarsList = () => {
                             display: "flex"
                         }}>
                         <ButtonGroup disableElevation fullWidth="true" variant="outlined" aria-label="outlined primary button group">
-                            <Button color="success" onClick={() => { CreateCalendars() }}>Add Calendar</Button>
+                            <Button component={Link} to={`/AddCalendar`} color="success">Add Calendar</Button>
                         </ButtonGroup>
                     </Box>
                 </Card>
