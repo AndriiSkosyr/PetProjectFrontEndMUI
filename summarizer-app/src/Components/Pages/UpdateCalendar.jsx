@@ -19,11 +19,11 @@ export default function UpdateCalendar() {
     const { id } = useParams();
     const navigate = useNavigate();
     const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
-    
+
     const timeout = (delay) => {
-        return new Promise( res => setTimeout(res, delay) );
+        return new Promise(res => setTimeout(res, delay));
     }
-    
+
     const handleCheckboxChange = (event) => {
         setIsCheckboxChecked(event.target.checked);
     }
@@ -40,7 +40,7 @@ export default function UpdateCalendar() {
         const requestOptions = {
             method: "PUT",
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({calendarId: id, calendarName: calendarName, clientEvent: clientEvent })
+            body: JSON.stringify({ calendarId: id, calendarName: calendarName, clientEvent: clientEvent })
         }
         const response = await fetch("http://127.0.0.1:5000/calendar", requestOptions);
         const data = await response.json();
