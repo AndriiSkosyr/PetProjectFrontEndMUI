@@ -2,9 +2,12 @@ import { Box, Button, ButtonGroup, Card, List, ListItem, ListItemButton, ListIte
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
 
 const CalendarsList = () => {
+
+    const navigate = useNavigate();
     const [isHovered, setIsHovered] = useState(false);
     const [CalendarsArray, setCalendars] = useState([]);
 
@@ -25,18 +28,6 @@ const CalendarsList = () => {
             .catch((err) => {
                 console.log(err.message);
             });
-    }    
-
-    const UpdateCalendars = async () => {
-        const requestOptions = {
-            method: "PUT",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ calendarName: "testPUT", calendarId: "1" })
-        }
-        const response = await fetch("http://127.0.0.1:5000/calendar", requestOptions);
-        const data = await response.json();
-        console.log(data);
-        ReadCalendars();
     }
 
     const DeleteCalendars = async (calendarId) => {
@@ -66,11 +57,11 @@ const CalendarsList = () => {
                     <Typography variant="subtitle1">Calendars</Typography>
                     <List>
                         {CalendarsArray.map(item => {
-                            return <ListItem>
+                            return <ListItem key={item.CalendarId} id={item.CalendarId}>
                                 <ListItemButton onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-                                    <ListItemText id={item.CalendarId} primary={item.CalendarName} />
+                                    <ListItemText primary={item.CalendarName} />
                                     <Box sx={{ display: isHovered ? 'flex' : 'none' }}>
-                                        <EditIcon fontSize="small" onClick={() => { UpdateCalendars() }} sx={{ marginRight: "1vw" }} />
+                                        <EditIcon fontSize="small" onClick={() => { navigate(`/UpdateCalendar/${item.CalendarId}`) }} sx={{ marginRight: "1vw" }} />
                                         <DeleteIcon fontSize="small" onClick={() => { DeleteCalendars(item.CalendarId) }} />
                                     </Box>
                                 </ListItemButton>
