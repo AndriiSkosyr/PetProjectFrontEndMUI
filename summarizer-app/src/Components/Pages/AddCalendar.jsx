@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useState } from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -15,16 +14,11 @@ const defaultTheme = createTheme();
 
 export default function AddCalendar() {
 
-    const navigate = useNavigate();
-    const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
+    const navigate = useNavigate();    
 
     const timeout = (delay) => {
         return new Promise(res => setTimeout(res, delay));
-    }
-
-    const handleCheckboxChange = (event) => {
-        setIsCheckboxChecked(event.target.checked);
-    }
+    }   
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -72,16 +66,11 @@ export default function AddCalendar() {
                             autoComplete="CalendarName"
                             autoFocus
                         />
-                        <FormControlLabel
-                            control={<Checkbox checked={isCheckboxChecked} onChange={handleCheckboxChange} value="remember" color="primary" />}
-                            label="Confirm"
-                        />
                         <Button
                             type="submit"
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
-                            disabled={!isCheckboxChecked}
                         >
                             Add Calendar
                         </Button>

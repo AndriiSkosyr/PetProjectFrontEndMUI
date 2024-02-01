@@ -1,10 +1,7 @@
 import * as React from 'react';
-import { useState } from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
@@ -18,14 +15,9 @@ export default function UpdateCalendar() {
 
     const { id } = useParams();
     const navigate = useNavigate();
-    const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
 
     const timeout = (delay) => {
         return new Promise(res => setTimeout(res, delay));
-    }
-
-    const handleCheckboxChange = (event) => {
-        setIsCheckboxChecked(event.target.checked);
     }
 
     const handleSubmit = async (event) => {
@@ -82,16 +74,11 @@ export default function UpdateCalendar() {
                             name="clientEvent"
                             autoComplete="ClientEvent"
                         />
-                        <FormControlLabel
-                            control={<Checkbox checked={isCheckboxChecked} onChange={handleCheckboxChange} value="remember" color="primary" />}
-                            label="Confirm"
-                        />
                         <Button
                             type="submit"
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
-                            disabled={!isCheckboxChecked}
                         >
                             Update Calendar
                         </Button>
