@@ -3,60 +3,84 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import Alert from '@mui/material/Alert'; // Import Alert component
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
+      {'Andrii Skosyr Pet Project, '}
+      <Link color="inherit" href="https://mui.com/"></Link>
+      {' '}
       {new Date().getFullYear()}
       {'.'}
     </Typography>
   );
 }
 
-// TODO remove, this demo shouldn't need to reset the theme.
-
 const defaultTheme = createTheme();
 
 export default function SignUp() {
-  const handleSubmit = (event) => {
+  const [formData, setFormData] = React.useState({ firstName: '', lastName: '', email: '', password: '' });
+  const [alertMessage, setAlertMessage] = React.useState(null); // For success or error messages
+  const [alertType, setAlertType] = React.useState(''); // Type of alert: "success" or "error"
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    ClientRegister(data.get('firstName') + data.get('lastName'), data.get('email'), data.get('password'));
-    console.log(data.get('firstName') + data.get('lastName'), data.get('email'), data.get('password'));
-    
+    const name = data.get('firstName') + data.get('lastName');
+    const email = data.get('email');
+    const password = data.get('password');
+
+    // Call ClientRegister and handle success/fail
+    const result = await ClientRegister(name, email, password);
+    if (result.success) {
+      // Clear form on success
+      setFormData({ firstName: '', lastName: '', email: '', password: '' });
+      setAlertMessage('Registration successful!'); // Show success alert
+      setAlertType('success');
+    } else {
+      setAlertMessage(`Registration failed: ${result.error}`); // Show error alert
+      setAlertType('error');
+    }
   };
 
   const ClientRegister = async (name, email, password) => {
-    await fetch("http://127.0.0.1:5000/client", {
-      method: "POST",
-      body: JSON.stringify({
-        clientName: name,
-        clientEmail: email,
-        clientPassword: password,
-        clientId: Math.floor(Math.random() * 10)
-      }),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    })
-      .then((response) => response.json())
-      .catch((err) => {
-        console.log(err.message);
+    try {
+      const response = await fetch("http://127.0.0.1:5000/client", {
+        method: "POST",
+        body: JSON.stringify({
+          clientName: name,
+          clientEmail: email,
+          clientPassword: password,
+          clientId: Math.floor(Math.random() * 10),
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+        },
       });
-  }
+      if (!response.ok) {
+        throw new Error("Network response was not ok.");
+      }
+      const jsonResponse = await response.json();
+      return { success: true, data: jsonResponse };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -64,7 +88,7 @@ export default function SignUp() {
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8,
+            marginTop: 15,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -76,6 +100,13 @@ export default function SignUp() {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
+
+          {alertMessage && (
+            <Alert severity={alertType} sx={{ width: '100%', mt: 2 }}>
+              {alertMessage}
+            </Alert>
+          )}
+
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
@@ -87,6 +118,8 @@ export default function SignUp() {
                   id="firstName"
                   label="First Name"
                   autoFocus
+                  value={formData.firstName} // Bind to state
+                  onChange={handleChange}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -97,6 +130,8 @@ export default function SignUp() {
                   label="Last Name"
                   name="lastName"
                   autoComplete="family-name"
+                  value={formData.lastName} // Bind to state
+                  onChange={handleChange}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -107,6 +142,8 @@ export default function SignUp() {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  value={formData.email} // Bind to state
+                  onChange={handleChange}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -118,14 +155,10 @@ export default function SignUp() {
                   type="password"
                   id="password"
                   autoComplete="new-password"
+                  value={formData.password} // Bind to state
+                  onChange={handleChange}
                 />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive inspiration, marketing promotions and updates via email."
-                />
-              </Grid>
+              </Grid>              
             </Grid>
             <Button
               type="submit"

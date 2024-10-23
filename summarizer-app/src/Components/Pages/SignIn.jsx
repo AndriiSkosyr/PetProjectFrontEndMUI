@@ -11,48 +11,73 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import Alert from '@mui/material/Alert'; // Import Alert component
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
+      {'Andrii Skosyr Pet Project,'}
+      <Link color="inherit" href="https://mui.com/"></Link>
+      {' '}{new Date().getFullYear()}{'.'}
     </Typography>
   );
 }
 
-// TODO remove, this demo shouldn't need to reset the theme.
-
 const defaultTheme = createTheme();
 
 export default function SignIn() {
-  const handleSubmit = (event) => {
+  const [formData, setFormData] = React.useState({ email: '', password: '' });
+  const [alertMessage, setAlertMessage] = React.useState(null); // For success or error messages
+  const [alertType, setAlertType] = React.useState(''); // Type of alert: "success" or "error"
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    ClientLogin(data.get('email'), data.get('password'));
+    const email = data.get('email');
+    const password = data.get('password');
+
+    // Call ClientLogin and handle success/fail
+    const result = await ClientLogin(email, password);
+    if (result.success) {
+      // Clear form on success
+      setFormData({ email: '', password: '' });
+      setAlertMessage('Login successful!'); // Show success alert
+      setAlertType('success');
+    } else {
+      setAlertMessage(`Login failed: ${result.error}`); // Show error alert
+      setAlertType('error');
+    }
   };
 
   const ClientLogin = async (email, password) => {
-    await fetch("http://127.0.0.1:5000/login", {
-      method: "POST",
-      body: JSON.stringify({
-        clientEmail: email,
-        clientPassword: password
-      }),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    })
-      .then((response) => response.json())
-      .catch((err) => {
-        console.log(err.message);
+    try {
+      const response = await fetch("http://127.0.0.1:5000/login", {
+        method: "POST",
+        body: JSON.stringify({
+          clientEmail: email,
+          clientPassword: password,
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+        },
       });
-  }
+      if (!response.ok) {
+        throw new Error("Network response was not ok.");
+      }
+      const jsonResponse = await response.json();
+      return { success: true, data: jsonResponse };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -60,7 +85,7 @@ export default function SignIn() {
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8,
+            marginTop: 15,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -72,6 +97,13 @@ export default function SignIn() {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
+
+          {alertMessage && (
+            <Alert severity={alertType} sx={{ width: '100%', mt: 2 }}>
+              {alertMessage}
+            </Alert>
+          )}
+
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
@@ -82,6 +114,8 @@ export default function SignIn() {
               name="email"
               autoComplete="email"
               autoFocus
+              value={formData.email} // Bind to state
+              onChange={handleChange}
             />
             <TextField
               margin="normal"
@@ -92,6 +126,8 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
+              value={formData.password} // Bind to state
+              onChange={handleChange}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}

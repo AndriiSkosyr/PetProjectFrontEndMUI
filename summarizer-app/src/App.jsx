@@ -1,6 +1,6 @@
 import React from "react";
 import ResponsiveAppBar from "./Components/Appbar";
-import { Route, Routes } from "react-router";
+import { Route, Routes, useLocation } from "react-router";
 import Home from "./Components/Home";
 import About from "./Components/About";
 import Settings from "./Components/Settings";
@@ -11,9 +11,16 @@ import AddCalendar from "./Components/Pages/AddCalendar";
 import UpdateCalendar from "./Components/Pages/UpdateCalendar";
 
 const App = () => {
+    const location = useLocation();  // Get current path
+    
+    // Pages where header and footer should not appear
+    const noHeaderFooterRoutes = ['/Sign-in', '/Sign-up'];
+
     return (
         <>
-            <ResponsiveAppBar />
+            {/* Conditionally render the header */}
+            {!noHeaderFooterRoutes.includes(location.pathname) && <ResponsiveAppBar />}
+            
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/Settings" element={<Settings />} />
@@ -21,9 +28,11 @@ const App = () => {
                 <Route path="/Sign-in" element={<SignIn />} />
                 <Route path="/Sign-up" element={<SignUp />} />
                 <Route path="/AddCalendar" element={<AddCalendar />} />
-                <Route path="/UpdateCalendar/:id" element={<UpdateCalendar/>} />
+                <Route path="/UpdateCalendar/:id" element={<UpdateCalendar />} />
             </Routes>
-            <StickyFooter></StickyFooter>
+
+            {/* Conditionally render the footer */}
+            {!noHeaderFooterRoutes.includes(location.pathname) && <StickyFooter />}
         </>
     );
 }
