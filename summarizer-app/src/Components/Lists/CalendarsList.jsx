@@ -8,47 +8,53 @@ import { Link, useNavigate } from "react-router-dom";
 const CalendarsList = () => {
 
     const navigate = useNavigate();
-    const [isHovered, setIsHovered] = useState(false);
     const [CalendarsArray, setCalendars] = useState([]);
+    const [hoveredCalendarId, setHoveredCalendarId] = useState(null);
 
     useEffect(() => {
         ReadCalendars();
     }, []);
 
     const ReadCalendars = async () => {
-        await fetch("http://127.0.0.1:5000/calendar", {
-            headers: {
-                "Content-type": "application/json; charset=UTF-8",
-            },
-        })
-            .then((response) => response.json())
-            .then((response) => {
-                setCalendars(response)
-            })
-            .catch((err) => {
-                console.log(err.message);
+        try {
+            const response = await fetch("http://127.0.0.1:5000/calendar", {
+                headers: { "Content-type": "application/json; charset=UTF-8" },
             });
-    }
-
-    const DeleteCalendars = async (calendarId) => {
-        const requestOptions = {
-            method: "DELETE",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ calendarId: calendarId })
+            const data = await response.json();
+            setCalendars(data);
+        } catch (err) {
+            console.error(err.message);
+            alert("Failed to fetch calendars");
         }
-        const response = await fetch("http://127.0.0.1:5000/calendar", requestOptions);
-        const data = await response.json();
-        console.log(data);
-        ReadCalendars();
-    }
+    };
+
+    const DeleteCalendar = async (calendarId) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/calendar`, {
+                method: "DELETE",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ calendarId })
+            });
+            if (response.ok) {
+                setCalendars(prev => prev.filter(c => c.CalendarId !== calendarId)); // Update state directly
+                alert("Calendar deleted successfully");
+            } else {
+                alert("Failed to delete calendar");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error occurred while deleting");
+        }
+    };
+    
 
     return (
         <>
             <Box>
                 <Card variant="outlined"
                     sx={{
-                        minHeight: '40vh',
-                        minWidth: '30vh',
+                        minHeight: { xs: '20vh', sm: '30vh', md: '40vh' },
+                        minWidth: { xs: '20vh', sm: '25vh', md: '30vh' },
                         margin: '2rem',
                         textAlign: "center",
                         display: "flex",
@@ -58,11 +64,11 @@ const CalendarsList = () => {
                     <List>
                         {CalendarsArray.map(item => {
                             return <ListItem key={item.CalendarId} id={item.CalendarId}>
-                                <ListItemButton onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+                                <ListItemButton onMouseEnter={() => setHoveredCalendarId(item.CalendarId)} onMouseLeave={() => setHoveredCalendarId(null)}>
                                     <ListItemText primary={item.CalendarName} />
-                                    <Box sx={{ display: isHovered ? 'flex' : 'none' }}>
+                                    <Box sx={{ display: hoveredCalendarId === item.CalendarId ? 'flex' : 'none' }}>
                                         <EditIcon fontSize="small" onClick={() => { navigate(`/UpdateCalendar/${item.CalendarId}`) }} sx={{ marginRight: "1vw" }} />
-                                        <DeleteIcon fontSize="small" onClick={() => { DeleteCalendars(item.CalendarId) }} />
+                                        <DeleteIcon fontSize="small" onClick={() => { DeleteCalendar(item.CalendarId) }} />
                                     </Box>
                                 </ListItemButton>
                             </ListItem>
