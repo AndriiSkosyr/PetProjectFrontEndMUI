@@ -11,25 +11,23 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Alert from '@mui/material/Alert'; // Import Alert component
+import Alert from '@mui/material/Alert';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Andrii Skosyr Pet Project,'}
-      <Link color="inherit" href="https://mui.com/"></Link>
-      {' '}{new Date().getFullYear()}{'.'}
-    </Typography>
-  );
-}
+import { useNavigate } from 'react-router-dom';
 
 const defaultTheme = createTheme();
 
 export default function SignIn() {
   const [formData, setFormData] = React.useState({ email: '', password: '' });
-  const [alertMessage, setAlertMessage] = React.useState(null); // For success or error messages
-  const [alertType, setAlertType] = React.useState(''); // Type of alert: "success" or "error"
+  const [alertMessage, setAlertMessage] = React.useState(null);
+  const [alertType, setAlertType] = React.useState('');
+  const [rememberMe, setRememberMe] = React.useState(false);
+  const navigate = useNavigate(); // For redirect
+
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -37,15 +35,27 @@ export default function SignIn() {
     const email = data.get('email');
     const password = data.get('password');
 
+    // Validate email format
+    if (!validateEmail(email)) {
+      setAlertMessage('Invalid email format');
+      setAlertType('error');
+      return;
+    }
+
     // Call ClientLogin and handle success/fail
     const result = await ClientLogin(email, password);
     if (result.success) {
-      // Clear form on success
       setFormData({ email: '', password: '' });
-      setAlertMessage('Login successful!'); // Show success alert
+      setAlertMessage('Login successful!');
       setAlertType('success');
+      if (rememberMe) {
+        localStorage.setItem('userToken', result.data.token); // Store token in localStorage
+      }
+      setTimeout(() => {
+        navigate('/home'); // Redirect to home after successful login
+      }, 1000);
     } else {
-      setAlertMessage(`Login failed: ${result.error}`); // Show error alert
+      setAlertMessage('Invalid credentials');
       setAlertType('error');
     }
   };
@@ -54,16 +64,11 @@ export default function SignIn() {
     try {
       const response = await fetch("http://127.0.0.1:5000/login", {
         method: "POST",
-        body: JSON.stringify({
-          clientEmail: email,
-          clientPassword: password,
-        }),
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-        },
+        body: JSON.stringify({ clientEmail: email, clientPassword: password }),
+        headers: { "Content-type": "application/json; charset=UTF-8" },
       });
       if (!response.ok) {
-        throw new Error("Network response was not ok.");
+        throw new Error("Invalid credentials");
       }
       const jsonResponse = await response.json();
       return { success: true, data: jsonResponse };
@@ -73,36 +78,20 @@ export default function SignIn() {
   };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 15,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
+        <Box sx={{ marginTop: 16, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
+          <Typography component="h1" variant="h5">Sign in</Typography>
 
-          {alertMessage && (
-            <Alert severity={alertType} sx={{ width: '100%', mt: 2 }}>
-              {alertMessage}
-            </Alert>
-          )}
+          {alertMessage && <Alert severity={alertType} sx={{ width: '100%', mt: 2 }}>{alertMessage}</Alert>}
 
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
@@ -114,7 +103,7 @@ export default function SignIn() {
               name="email"
               autoComplete="email"
               autoFocus
-              value={formData.email} // Bind to state
+              value={formData.email}
               onChange={handleChange}
             />
             <TextField
@@ -126,31 +115,20 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
-              value={formData.password} // Bind to state
+              value={formData.password}
               onChange={handleChange}
             />
             <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
+              control={<Checkbox value="remember" color="primary" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />}
               label="Remember me"
             />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign In
-            </Button>
+            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>Sign In</Button>
             <Grid container>
               <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
+                <Link href="#" variant="body2">Forgot password?</Link>
               </Grid>
               <Grid item>
-                <Link href="/Sign-up" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
+                <Link href="/Sign-up" variant="body2">{"Don't have an account? Sign Up"}</Link>
               </Grid>
             </Grid>
           </Box>
@@ -158,5 +136,14 @@ export default function SignIn() {
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
     </ThemeProvider>
+  );
+}
+
+function Copyright(props) {
+  return (
+    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+      {'Andrii Skosyr, '}
+      {new Date().getFullYear()}{'.'}
+    </Typography>
   );
 }

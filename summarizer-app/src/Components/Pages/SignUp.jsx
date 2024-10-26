@@ -11,55 +11,67 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Alert from '@mui/material/Alert'; // Import Alert component
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Andrii Skosyr Pet Project, '}
-      <Link color="inherit" href="https://mui.com/"></Link>
-      {' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+import { useNavigate } from 'react-router-dom'; // For redirection
 
 const defaultTheme = createTheme();
 
 export default function SignUp() {
-  const [formData, setFormData] = React.useState({ firstName: '', lastName: '', email: '', password: '' });
-  const [alertMessage, setAlertMessage] = React.useState(null); // For success or error messages
-  const [alertType, setAlertType] = React.useState(''); // Type of alert: "success" or "error"
+  const [formData, setFormData] = React.useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: ''
+  });
+  const [alertMessage, setAlertMessage] = React.useState(null);
+  const [alertType, setAlertType] = React.useState('');
+  const navigate = useNavigate(); // For redirect after successful registration
+
+  // Function to validate email format
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const name = data.get('firstName') + data.get('lastName');
+    const firstName = data.get('firstName');
+    const lastName = data.get('lastName');
     const email = data.get('email');
     const password = data.get('password');
 
-    // Call ClientRegister and handle success/fail
-    const result = await ClientRegister(name, email, password);
+    // Validate email format
+    if (!validateEmail(email)) {
+      setAlertMessage('Invalid email format');
+      setAlertType('error');
+      return;
+    }
+
+    // Call ClientRegister and handle success/failure
+    const result = await ClientRegister(firstName, lastName, email, password);
     if (result.success) {
-      // Clear form on success
       setFormData({ firstName: '', lastName: '', email: '', password: '' });
-      setAlertMessage('Registration successful!'); // Show success alert
+      setAlertMessage('Registration successful!');
       setAlertType('success');
+      setTimeout(() => {
+        navigate('/Sign-in'); // Redirect to sign-in page after successful registration
+      }, 1000);
     } else {
-      setAlertMessage(`Registration failed: ${result.error}`); // Show error alert
+      setAlertMessage(`Registration failed: ${result.error}`);
       setAlertType('error');
     }
   };
 
-  const ClientRegister = async (name, email, password) => {
+  // API request for registration
+  const ClientRegister = async (firstName, lastName, email, password) => {
     try {
       const response = await fetch("http://127.0.0.1:5000/client", {
         method: "POST",
         body: JSON.stringify({
-          clientName: name,
+          clientName: `${firstName} ${lastName}`, // Combine first and last name
           clientEmail: email,
           clientPassword: password,
-          clientId: Math.floor(Math.random() * 10),
+          clientId: Math.floor(Math.random() * 10000), // Generate a random clientId
         }),
         headers: {
           "Content-type": "application/json; charset=UTF-8",
@@ -88,7 +100,7 @@ export default function SignUp() {
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 15,
+            marginTop: 16,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -101,6 +113,7 @@ export default function SignUp() {
             Sign up
           </Typography>
 
+          {/* Alert message for success or error */}
           {alertMessage && (
             <Alert severity={alertType} sx={{ width: '100%', mt: 2 }}>
               {alertMessage}
@@ -158,7 +171,7 @@ export default function SignUp() {
                   value={formData.password} // Bind to state
                   onChange={handleChange}
                 />
-              </Grid>              
+              </Grid>
             </Grid>
             <Button
               type="submit"
@@ -177,8 +190,18 @@ export default function SignUp() {
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 5 }} />
+        <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
     </ThemeProvider>
+  );
+}
+
+function Copyright(props) {
+  return (
+    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+      {'Andrii Skosyr, '}
+      {new Date().getFullYear()}
+      {'.'}
+    </Typography>
   );
 }
