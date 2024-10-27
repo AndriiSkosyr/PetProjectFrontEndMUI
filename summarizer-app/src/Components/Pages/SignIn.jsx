@@ -64,13 +64,22 @@ export default function SignIn() {
     try {
       const response = await fetch("http://127.0.0.1:5000/login", {
         method: "POST",
-        body: JSON.stringify({ clientEmail: email, clientPassword: password }),
-        headers: { "Content-type": "application/json; charset=UTF-8" },
+        body: JSON.stringify({
+          clientEmail: email,
+          clientPassword: password,
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+        },
       });
       if (!response.ok) {
-        throw new Error("Invalid credentials");
+        throw new Error("Network response was not ok.");
       }
       const jsonResponse = await response.json();
+      
+      // Save clientId to localStorage
+      localStorage.setItem('clientId', jsonResponse.clientId);
+      
       return { success: true, data: jsonResponse };
     } catch (error) {
       return { success: false, error: error.message };

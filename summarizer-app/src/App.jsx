@@ -9,6 +9,7 @@ import SignIn from "./Components/Pages/SignIn";
 import SignUp from "./Components/Pages/SignUp";
 import AddCalendar from "./Components/Pages/AddCalendar";
 import UpdateCalendar from "./Components/Pages/UpdateCalendar";
+import Account from './Components/Pages/Account';
 
 const App = () => {
     const location = useLocation();  // Get current path
@@ -30,7 +31,8 @@ const App = () => {
                 <Route path="/Sign-up" element={<SignUp />} />
                 <Route path="/AddCalendar" element={<AddCalendar />} />
                 <Route path="/UpdateCalendar/:id" element={<UpdateCalendar />} />
-                <Route path="/Home" element={<Home />} />  {/* Home page route */}
+                <Route path="/Home" element={<Home />} />
+                <Route path="/Account" element={<Account />} />
             </Routes>
 
             {/* Conditionally render the footer */}

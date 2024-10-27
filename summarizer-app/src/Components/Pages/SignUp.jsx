@@ -63,15 +63,14 @@ export default function SignUp() {
   };
 
   // API request for registration
-  const ClientRegister = async (firstName, lastName, email, password) => {
+  const ClientRegister = async (name, email, password) => {
     try {
       const response = await fetch("http://127.0.0.1:5000/client", {
         method: "POST",
         body: JSON.stringify({
-          clientName: `${firstName} ${lastName}`, // Combine first and last name
+          clientName: name,
           clientEmail: email,
           clientPassword: password,
-          clientId: Math.floor(Math.random() * 10000), // Generate a random clientId
         }),
         headers: {
           "Content-type": "application/json; charset=UTF-8",
@@ -81,11 +80,15 @@ export default function SignUp() {
         throw new Error("Network response was not ok.");
       }
       const jsonResponse = await response.json();
+      
+      // Save clientId to localStorage
+      localStorage.setItem('clientId', jsonResponse.clientId);
+      
       return { success: true, data: jsonResponse };
     } catch (error) {
       return { success: false, error: error.message };
     }
-  };
+};
 
   const handleChange = (e) => {
     setFormData({
