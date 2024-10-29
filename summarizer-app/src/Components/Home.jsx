@@ -1,30 +1,53 @@
 import React from "react";
 import { Grid } from "@mui/material";
-import CalendarsList from "./Lists/CalendarsList"
-import EventsList from "./Lists/EventsList";
-import MeetingsList from "./Lists/MeetingsList";
+import ListCard from "./ListCard";
+import GoogleCalendar from "./GoogleCalendar";
 
 const Home = () => {
     return (
-        <>
-        {/* Grid layout for home page */}
-            <Grid container>
-                <Grid xs={3}>
-                    <Grid container>
-                        <Grid xs={12}><CalendarsList /></Grid>
-                        <Grid xs={12}><EventsList /></Grid>
-                        <Grid xs={12}><MeetingsList /></Grid>
+        <Grid container spacing={2} sx={{ padding: '2rem' }}>
+            <Grid item xs={3}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <ListCard 
+                            title="Calendars"
+                            fetchUrl="http://127.0.0.1:5000/calendar"
+                            deleteUrl="http://127.0.0.1:5000/calendar"
+                            addLink="/AddCalendar"
+                            itemIdKey="CalendarId"
+                            itemNameKey="CalendarName"
+                            updateLinkBase="/UpdateCalendar"
+                        />
                     </Grid>
-                </Grid>
-                <Grid xs={9}>
-                    <Grid container>
-                        <Grid xs={12}></Grid>
-                        <Grid xs={12}></Grid>
+                    <Grid item xs={12}>
+                        <ListCard 
+                            title="Recent events"
+                            fetchUrl="http://127.0.0.1:5000/event"
+                            deleteUrl="http://127.0.0.1:5000/event"
+                            addLink="/AddEvent"
+                            itemIdKey="EventId"
+                            itemNameKey="EventName"
+                            updateLinkBase="/UpdateEvent"
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <ListCard 
+                            title="Recent meetings"
+                            fetchUrl="http://127.0.0.1:5000/meeting"
+                            deleteUrl="http://127.0.0.1:5000/meeting"
+                            addLink="/AddMeeting"
+                            itemIdKey="MeetingId"
+                            itemNameKey="MeetingName"
+                            updateLinkBase="/UpdateMeeting"
+                        />
                     </Grid>
                 </Grid>
             </Grid>
-        </>
-    )
-}
+            <Grid item xs={9} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'stretch' }}>
+                <GoogleCalendar />
+            </Grid>
+        </Grid>
+    );
+};
 
 export default Home;
