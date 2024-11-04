@@ -18,18 +18,7 @@ const Home = () => {
                             itemNameKey="CalendarName"
                             updateLinkBase="/UpdateCalendar"
                         />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <ListCard 
-                            title="Recent events"
-                            fetchUrl="http://127.0.0.1:5000/event"
-                            deleteUrl="http://127.0.0.1:5000/event"
-                            addLink="/AddEvent"
-                            itemIdKey="EventId"
-                            itemNameKey="EventName"
-                            updateLinkBase="/UpdateEvent"
-                        />
-                    </Grid>
+                    </Grid>                    
                     <Grid item xs={12}>
                         <ListCard 
                             title="Recent meetings"
