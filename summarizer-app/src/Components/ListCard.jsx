@@ -85,7 +85,7 @@ const ListCard = ({ title, fetchUrl, deleteUrl, addLink, itemIdKey, itemNameKey,
                         marginRight: '2vh',
                         display: "flex"
                     }}>
-                    <ButtonGroup disableElevation fullWidth="true" variant="outlined" aria-label="outlined primary button group">
+                    <ButtonGroup disableElevation fullWidth={true} variant="outlined" aria-label="outlined primary button group">
                         <Button component={Link} to={addLink} color="success">Add {title.slice(0, -1)}</Button>
                     </ButtonGroup>
                 </Box>
