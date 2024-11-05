@@ -1,6 +1,7 @@
 import React from "react";
 import { Grid } from "@mui/material";
 import ListCard from "./ListCard";
+import GoogleCalendar from "./GoogleCalendar";
 
 const Home = () => {
     return (
@@ -32,7 +33,7 @@ const Home = () => {
                 </Grid>
             </Grid>
             <Grid item xs={9} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'stretch' }}>
-                
+                <GoogleCalendar />
             </Grid>
         </Grid>
     );
