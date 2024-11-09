@@ -72,19 +72,34 @@ export default function SignIn() {
           "Content-type": "application/json; charset=UTF-8",
         },
       });
-      if (!response.ok) {
-        throw new Error("Network response was not ok.");
+  
+      // Handle specific status codes
+      if (response.status === 200) {
+        const jsonResponse = await response.json();
+  
+        // Save clientId to localStorage
+        localStorage.setItem('clientId', jsonResponse['clientId']);
+        localStorage.setItem('clientEmail', jsonResponse['clientEmail']);  // Optionally save the email
+        console.log(localStorage)
+  
+        return { success: true, data: jsonResponse };
+      } 
+      else if (response.status === 400) {
+        const errorData = await response.json();
+        throw new Error(errorData.Message || "Bad request.");
+      } 
+      else if (response.status === 401) {
+        const errorData = await response.json();
+        throw new Error(errorData.Message || "Unauthorized access. Incorrect username or password.");
+      } 
+      else {
+        throw new Error(`Unexpected error: ${response.status}`);
       }
-      const jsonResponse = await response.json();
-      
-      // Save clientId to localStorage
-      localStorage.setItem('clientId', jsonResponse.clientId);
-      
-      return { success: true, data: jsonResponse };
     } catch (error) {
       return { success: false, error: error.message };
     }
   };
+  
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

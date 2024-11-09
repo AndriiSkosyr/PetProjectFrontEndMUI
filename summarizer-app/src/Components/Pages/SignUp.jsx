@@ -63,12 +63,12 @@ export default function SignUp() {
   };
 
   // API request for registration
-  const ClientRegister = async (name, email, password) => {
+  const ClientRegister = async (firstName, lastName, email, password) => {
     try {
       const response = await fetch("http://127.0.0.1:5000/client", {
         method: "POST",
         body: JSON.stringify({
-          clientName: name,
+          clientName: firstName + lastName,
           clientEmail: email,
           clientPassword: password,
         }),
@@ -76,19 +76,35 @@ export default function SignUp() {
           "Content-type": "application/json; charset=UTF-8",
         },
       });
-      if (!response.ok) {
-        throw new Error("Network response was not ok.");
+      
+      // Handle specific status codes
+      if (response.status === 200) {
+        const jsonResponse = await response.json();
+        
+        // Save clientId to localStorage if it exists
+        if (jsonResponse.clientId) {
+          localStorage.setItem('clientId', jsonResponse.clientId);
+        }
+
+        return { success: true, data: jsonResponse };
+      } 
+      else if (response.status === 400) {
+        const errorData = await response.json();
+        throw new Error(errorData.Message || "Bad request. Please check the input fields.");
+      } 
+      else if (response.status === 409) {  // Assuming 409 for 'Account already exists' error
+        const errorData = await response.json();
+        throw new Error(errorData.Message || "Account already exists.");
+      } 
+      else {
+        throw new Error(`Unexpected error: ${response.status}`);
       }
-      const jsonResponse = await response.json();
-      
-      // Save clientId to localStorage
-      localStorage.setItem('clientId', jsonResponse.clientId);
-      
-      return { success: true, data: jsonResponse };
     } catch (error) {
-      return { success: false, error: error.message };
+      return { success: false, error: error.message || "An error occurred during registration." };
     }
 };
+
+
 
   const handleChange = (e) => {
     setFormData({
