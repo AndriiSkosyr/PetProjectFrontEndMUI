@@ -3,7 +3,7 @@ import { gapi } from 'gapi-script';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { Button, Box, Paper, Container } from '@mui/material';
+import { Button, Box, Paper, Container, ButtonGroup } from '@mui/material';
 
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
 const API_KEY = process.env.REACT_APP_API_KEY;
@@ -90,6 +90,12 @@ function GoogleCalendar() {
     }
   };
 
+  const handleUpdateClick = () => {
+    fetch("http://127.0.0.1:5000/backend_call")
+        .then(response => response.json())
+        .then(data => this.setState({ totalReactPackages: data.total }));
+  };
+
   const handleSignoutClick = () => {
     const token = gapi.client ? gapi.client.getToken() : null;
     if (token && window.google) {
@@ -127,7 +133,7 @@ function GoogleCalendar() {
   return (
     <Container maxWidth="lg" sx={{ padding: 0.5, display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Paper elevation={0} sx={{ padding: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', flexGrow: 1 }}>
-        
+
         <Box sx={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', flexGrow: 1 }}>
           <Calendar
             localizer={localizer}
@@ -139,24 +145,37 @@ function GoogleCalendar() {
         </Box>
 
         {!isAuthorized ? (
-          <Button 
-            variant="contained" 
-            onClick={handleAuthClick} 
-            disabled={!gapiInited || !gisInited} 
+          <Button
+            variant="contained"
+            onClick={handleAuthClick}
+            disabled={!gapiInited || !gisInited}
             fullWidth
             sx={{ marginTop: 2 }}
           >
             Authorize Google Calendar
           </Button>
         ) : (
-          <Button 
-            variant="outlined" 
-            onClick={handleSignoutClick} 
-            fullWidth
-            sx={{ marginTop: 2 }}
-          >
-            Sign Out
-          </Button>
+
+          <ButtonGroup aria-label="under-calendar-button-group" fullWidth>
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={handleUpdateClick}
+              sx={{ marginTop: 2 }}
+            >
+              Update
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={handleSignoutClick}
+              sx={{ marginTop: 2 }}
+            >
+              Sign Out
+            </Button>
+
+          </ButtonGroup>
+
+
         )}
       </Paper>
     </Container>
