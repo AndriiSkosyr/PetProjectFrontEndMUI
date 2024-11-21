@@ -37,11 +37,11 @@ const ListCard = ({ title, fetchUrl, deleteUrl, addLink, itemIdKey, itemNameKey,
     const readItems = useCallback(async () => {
         const data = await fetchData(fetchUrl);
         if (data) setItems(data);
-    }, [fetchUrl]); // This ensures `readItems` is updated when `fetchUrl` changes
+    }, [fetchUrl]);
 
     useEffect(() => {
         readItems();
-    }, [readItems]); // `useEffect` now depends on `readItems`
+    }, [readItems]);
 
     // Delete item (calendar/event)
     const deleteItem = async (itemId) => {
@@ -53,25 +53,34 @@ const ListCard = ({ title, fetchUrl, deleteUrl, addLink, itemIdKey, itemNameKey,
     };
 
     return (
-        <Box>
-            <Card variant="outlined"
+        <Box sx={{ height: '100%', padding: '2rem' }}>
+            <Card
+                variant="outlined"
                 sx={{
-                    minHeight: { xs: '20vh', sm: '30vh', md: '40vh' },
-                    minWidth: { xs: '20vh', sm: '25vh', md: '30vh' },
-                    margin: '2rem',
-                    textAlign: "center",
-                    display: "flex",
-                    flexDirection: "column"
-                }}>
-                <Typography variant="subtitle1">{title}</Typography>
-                <List>
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    textAlign: 'center',
+                }}
+            >
+                <Typography variant="subtitle1" sx={{ padding: '1rem' }}>
+                    {title}
+                </Typography>
+                <List sx={{ flex: 1, overflowY: 'auto' }}>
                     {itemsArray.map(item => (
                         <ListItem key={item[itemIdKey]} id={item[itemIdKey]}>
-                            <ListItemButton onMouseEnter={() => setHoveredItemId(item[itemIdKey])} onMouseLeave={() => setHoveredItemId(null)}>
+                            <ListItemButton
+                                onMouseEnter={() => setHoveredItemId(item[itemIdKey])}
+                                onMouseLeave={() => setHoveredItemId(null)}
+                            >
                                 <ListItemText primary={item[itemNameKey]} />
                                 <Box sx={{ display: hoveredItemId === item[itemIdKey] ? 'flex' : 'none' }}>
-                                    <EditIcon fontSize="small" onClick={() => { navigate(`${updateLinkBase}/${item[itemIdKey]}`) }} sx={{ marginRight: "1vw" }} />
-                                    <DeleteIcon fontSize="small" onClick={() => { deleteItem(item[itemIdKey]) }} />
+                                    <EditIcon
+                                        fontSize="small"
+                                        onClick={() => navigate(`${updateLinkBase}/${item[itemIdKey]}`)}
+                                        sx={{ marginRight: '1vw' }}
+                                    />
+                                    <DeleteIcon fontSize="small" onClick={() => deleteItem(item[itemIdKey])} />
                                 </Box>
                             </ListItemButton>
                         </ListItem>
@@ -79,14 +88,21 @@ const ListCard = ({ title, fetchUrl, deleteUrl, addLink, itemIdKey, itemNameKey,
                 </List>
                 <Box
                     sx={{
-                        marginTop: "auto",
-                        marginBottom: '2vh',
-                        marginLeft: '2vh',
-                        marginRight: '2vh',
-                        display: "flex"
-                    }}>
-                    <ButtonGroup disableElevation fullWidth={true} variant="outlined" aria-label="outlined primary button group">
-                        <Button component={Link} to={addLink} color="success">Add {title.slice(0, -1)}</Button>
+                        padding: '1rem',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}
+                >
+                    <ButtonGroup
+                        disableElevation
+                        fullWidth
+                        variant="outlined"
+                        aria-label="outlined primary button group"
+                    >
+                        <Button component={Link} to={addLink} color="success">
+                            Add {title.slice(0, -1)}
+                        </Button>
                     </ButtonGroup>
                 </Box>
             </Card>

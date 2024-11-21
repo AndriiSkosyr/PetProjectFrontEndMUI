@@ -5,22 +5,11 @@ import GoogleCalendar from "./GoogleCalendar";
 
 const Home = () => {
     return (
-        <Grid container spacing={2} sx={{ padding: '2rem' }}>
-            <Grid item xs={3}>
-                <Grid container spacing={2}>
+        <Grid container spacing={2} sx={{ height: '100vh', margin: 0, padding: 0 }}>
+            <Grid item xs={3} sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Grid container spacing={2} sx={{ flex: 1 }}>
                     <Grid item xs={12}>
-                        <ListCard 
-                            title="Calendars"
-                            fetchUrl="http://127.0.0.1:5000/calendar"
-                            deleteUrl="http://127.0.0.1:5000/calendar"
-                            addLink="/AddCalendar"
-                            itemIdKey="CalendarId"
-                            itemNameKey="CalendarName"
-                            updateLinkBase="/UpdateCalendar"
-                        />
-                    </Grid>                    
-                    <Grid item xs={12}>
-                        <ListCard 
+                        <ListCard
                             title="Recent meetings"
                             fetchUrl="http://127.0.0.1:5000/meeting"
                             deleteUrl="http://127.0.0.1:5000/meeting"
@@ -36,6 +25,7 @@ const Home = () => {
                 <GoogleCalendar />
             </Grid>
         </Grid>
+
     );
 };
 
