@@ -16,18 +16,21 @@ const ListCard = ({ title, fetchUrl, deleteUrl, addLink, itemIdKey, itemNameKey,
                 method,
                 headers: { "Content-Type": "application/json; charset=UTF-8" }
             };
-
+    
             if (body) {
                 options.body = JSON.stringify(body);
             }
-
+    
             const response = await fetch(url, options);
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            return await response.json();
+    
+            const data = await response.json(); // Parse JSON response
+            console.log("Received data from backend:", data); // Log data to console
+            return data; // Return parsed data
         } catch (err) {
-            console.error(err.message);
+            console.error("Fetch error:", err.message);
             alert(`Error: ${err.message}`);
             return null;
         }
@@ -45,10 +48,10 @@ const ListCard = ({ title, fetchUrl, deleteUrl, addLink, itemIdKey, itemNameKey,
 
     // Delete item (calendar/event)
     const deleteItem = async (itemId) => {
-        const result = await fetchData(deleteUrl, 'DELETE', { [itemIdKey]: itemId });
+        const result = await fetchData(deleteUrl, 'DELETE', { meetingId: itemId }); // Match backend's expected key
         if (result) {
             setItems(prev => prev.filter(item => item[itemIdKey] !== itemId));
-            alert("Item deleted successfully");
+            alert(result.Message); // Display backend's response message
         }
     };
 

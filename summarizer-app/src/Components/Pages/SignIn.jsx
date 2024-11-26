@@ -78,8 +78,7 @@ export default function SignIn() {
         const jsonResponse = await response.json();
   
         // Save clientId to localStorage
-        localStorage.setItem('clientId', jsonResponse['clientId']);
-        localStorage.setItem('clientEmail', jsonResponse['clientEmail']);  // Optionally save the email
+        localStorage.setItem('clientId', jsonResponse['Client id']);
         console.log(localStorage)
   
         return { success: true, data: jsonResponse };

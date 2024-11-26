@@ -91,10 +91,29 @@ function GoogleCalendar() {
   };
 
   const handleUpdateClick = () => {
-    fetch("http://127.0.0.1:5000/backend_call")
-        .then(response => response.json())
-        .then(data => this.setState({ totalReactPackages: data.total }));
+    const clientId = localStorage.getItem("clientId");
+  
+    fetch("http://127.0.0.1:5000/backend_call", {
+      method: "POST", // Use POST for sending data
+      headers: {
+        "Content-Type": "application/json", // Indicate JSON format
+      },
+      body: JSON.stringify({ clientId }), // Include clientId in the request body
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then(data => {
+        this.setState({ totalReactPackages: data.total });
+      })
+      .catch(error => {
+        console.error("There was a problem with the fetch operation:", error);
+      });
   };
+  
 
   const handleSignoutClick = () => {
     const token = gapi.client ? gapi.client.getToken() : null;
@@ -111,24 +130,24 @@ function GoogleCalendar() {
     try {
       const response = await gapi.client.calendar.events.list({
         calendarId: 'primary',
-        timeMin: new Date().toISOString(),
         showDeleted: false,
         singleEvents: true,
-        maxResults: 10,
+        maxResults: 50, // Adjust the maximum number of events as needed
         orderBy: 'startTime',
       });
-
+  
       const formattedEvents = response.result.items.map(event => ({
         title: event.summary,
         start: new Date(event.start.dateTime || event.start.date),
         end: new Date(event.end.dateTime || event.end.date),
       }));
-
+  
       setEvents(formattedEvents);
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching calendar events:", error);
     }
   };
+  
 
   return (
     <Container maxWidth="lg" sx={{ padding: 0.5, display: 'flex', flexDirection: 'column', height: '100%' }}>
